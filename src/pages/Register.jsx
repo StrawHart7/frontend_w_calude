@@ -23,7 +23,9 @@ function Register() {
       setLoading(true)
       setError('')
       await api.post('/auth/register', { email, password })
-      navigate('/login')
+      const loginRes = await api.post('/auth/login', { email, password })
+      localStorage.setItem('token', loginRes.data.token)
+      navigate('/todos') // ✅
     } catch (err) {
       setError(err.response?.data?.message || 'Erreur lors de l\'inscription')
     } finally {
