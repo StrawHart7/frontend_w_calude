@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://mon-backend-7hcj.onrender.com'
+    baseURL: import.meta.env.VITE_API_URL
 })
 
 // Avant chaque requete, on ajoute automatiquement le token

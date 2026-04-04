@@ -1,13 +1,16 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import api from '../api'
 
 function Register() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!email || !password || !confirm) {
       setError('Veuillez remplir tous les champs')
       return
@@ -16,9 +19,17 @@ function Register() {
       setError('Les mots de passe ne correspondent pas')
       return
     }
-    console.log('Register:', { email, password })
+    try {
+      setLoading(true)
+      setError('')
+      await api.post('/auth/register', { email, password })
+      navigate('/login')
+    } catch (err) {
+      setError(err.response?.data?.message || 'Erreur lors de l\'inscription')
+    } finally {
+      setLoading(false)
+    }
   }
-
   return (
     <div style={{
       minHeight: '100vh',
@@ -74,11 +85,12 @@ function Register() {
             onChange={e => setConfirm(e.target.value)}
           />
           <button
-            onClick={handleSubmit}
-            style={{ background: '#6c63ff', color: '#fff', marginTop: '8px' }}
-          >
-            S'inscrire
-          </button>
+  onClick={handleSubmit}
+  disabled={loading}
+  style={{ background: '#6c63ff', color: '#fff', marginTop: '8px', opacity: loading ? 0.7 : 1 }}
+>
+  {loading ? 'Inscription...' : "S'inscrire"}
+</button>
         </div>
 
         <p style={{ color: '#94a3b8', marginTop: '24px', textAlign: 'center', fontSize: '14px' }}>
