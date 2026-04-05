@@ -36,9 +36,9 @@ function Profil() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('token')
-    window.location.href = import.meta.env.VITE_APP_URL
-  }
+  localStorage.removeItem('token')
+  window.location.href = import.meta.env.VITE_APP_URL
+}
 
   return (
     <div style={{ maxWidth: '520px', margin: '48px auto', padding: '0 24px' }}>
