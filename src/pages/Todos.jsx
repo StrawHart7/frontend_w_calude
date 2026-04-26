@@ -1,14 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import api from '../api'
 
 function Todos() {
   const [todos, setTodos] = useState([])
   const [newTache, setNewTache] = useState('')
-  const [newDeadline, setNewDeadline] = useState('')
   const [loading, setLoading] = useState(true)
+  const [toast, setToast] = useState(null)
+  const [openMenu, setOpenMenu] = useState(null)
   const [editingId, setEditingId] = useState(null)
   const [editText, setEditText] = useState('')
-  const [toast, setToast] = useState(null)
+  const [editDeadline, setEditDeadline] = useState('')
+  const menuRef = useRef(null)
 
   const showToast = (message, type = 'success') => {
     setToast({ message, type })
@@ -29,16 +31,26 @@ function Todos() {
     fetchTodos()
   }, [])
 
+  // Fermer le menu si on clique ailleurs
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setOpenMenu(null)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
   const addTodo = async () => {
     if (!newTache.trim()) return
     try {
-      const res = await api.post('/todos', { tache: newTache, deadline: newDeadline || null })
+      const res = await api.post('/todos', { tache: newTache })
       setTodos([...todos, res.data])
       setNewTache('')
-      setNewDeadline('')
       showToast('Tâche ajoutée !')
     } catch (err) {
-      showToast(err.response?.data?.message || 'Erreur lors de l\'ajout', 'error')
+      showToast(err.response?.data?.message || 'Erreur', 'error')
     }
   }
 
@@ -51,30 +63,35 @@ function Todos() {
     }
   }
 
-  const startEdit = (todo) => {
-    setEditingId(todo.id)
-    setEditText(todo.tache)
-  }
-
   const saveEdit = async (id) => {
     try {
-      const res = await api.put(`/todos/${id}`, { tache: editText })
+      const res = await api.put(`/todos/${id}`, {
+        tache: editText,
+        deadline: editDeadline || null
+      })
       setTodos(todos.map(t => t.id === id ? res.data : t))
       setEditingId(null)
+      setOpenMenu(null)
       showToast('Tâche modifiée !')
     } catch (err) {
-      showToast('Erreur lors de la modification', 'error')
+      showToast('Erreur', 'error')
     }
   }
 
   const deleteTodo = async (id) => {
     try {
       await api.delete(`/todos/${id}`)
-      setTodos(todos.filter(todo => todo.id !== id))
+      setTodos(todos.filter(t => t.id !== id))
+      setOpenMenu(null)
       showToast('Tâche supprimée !')
     } catch (err) {
-      showToast('Erreur lors de la suppression', 'error')
+      showToast('Erreur', 'error')
     }
+  }
+
+  const isOverdue = (deadline) => {
+    if (!deadline) return false
+    return new Date(deadline) < new Date()
   }
 
   const remaining = todos.filter(t => !t.completed).length
@@ -91,21 +108,19 @@ function Todos() {
           padding: '14px 20px', borderRadius: '10px',
           fontSize: '14px', fontWeight: '500',
           boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-          zIndex: 1000, transition: 'all 0.3s'
+          zIndex: 1000
         }}>
           {toast.type === 'error' ? '❌' : '✅'} {toast.message}
         </div>
       )}
 
-      <h1 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '8px' }}>
-        Mes tâches
-      </h1>
+      <h1 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '8px' }}>Mes tâches</h1>
       <p style={{ color: '#94a3b8', marginBottom: '32px' }}>
         {remaining} tâche{remaining > 1 ? 's' : ''} restante{remaining > 1 ? 's' : ''}
       </p>
 
-      {/* Ajouter une tâche */}
-      <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
+      {/* Ajouter */}
+      <div style={{ display: 'flex', gap: '12px', marginBottom: '32px' }}>
         <input
           type="text"
           placeholder="Nouvelle tâche..."
@@ -121,16 +136,6 @@ function Todos() {
         </button>
       </div>
 
-      {/* Date limite */}
-      <div style={{ marginBottom: '32px' }}>
-        <input
-          type="date"
-          value={newDeadline}
-          onChange={e => setNewDeadline(e.target.value)}
-          style={{ width: 'auto' }}
-        />
-      </div>
-
       {/* Liste */}
       {loading ? (
         <p style={{ color: '#94a3b8', textAlign: 'center', padding: '48px 0' }}>Chargement...</p>
@@ -144,83 +149,139 @@ function Todos() {
           {todos.map(todo => (
             <div key={todo.id} style={{
               background: '#13151f',
-              border: `1px solid ${todo.completed ? '#2d4a2d' : '#2d3148'}`,
+              border: `1px solid ${todo.completed ? '#2d4a2d' : isOverdue(todo.deadline) ? '#4a2d2d' : '#2d3148'}`,
               borderRadius: '12px',
               padding: '16px 20px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
               opacity: todo.completed ? 0.6 : 1,
-              transition: 'all 0.2s'
+              transition: 'all 0.2s',
+              position: 'relative'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
-                {/* Checkbox */}
-                <div
-                  onClick={() => toggleComplete(todo)}
-                  style={{
-                    width: '20px', height: '20px',
-                    borderRadius: '50%',
-                    border: `2px solid ${todo.completed ? '#4ade80' : '#6c63ff'}`,
-                    background: todo.completed ? '#4ade80' : 'transparent',
-                    cursor: 'pointer', flexShrink: 0,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '12px'
-                  }}
-                >
-                  {todo.completed && '✓'}
+              {/* Mode édition */}
+              {editingId === todo.id ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <input
+                    value={editText}
+                    onChange={e => setEditText(e.target.value)}
+                    autoFocus
+                  />
+                  <input
+                    type="date"
+                    value={editDeadline}
+                    onChange={e => setEditDeadline(e.target.value)}
+                  />
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                      onClick={() => saveEdit(todo.id)}
+                      style={{ background: '#1a2f1a', color: '#4ade80', flex: 1 }}
+                    >
+                      Sauvegarder
+                    </button>
+                    <button
+                      onClick={() => setEditingId(null)}
+                      style={{ background: '#1e2130', color: '#94a3b8', flex: 1 }}
+                    >
+                      Annuler
+                    </button>
+                  </div>
                 </div>
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
+                    {/* Checkbox */}
+                    <div
+                      onClick={() => toggleComplete(todo)}
+                      style={{
+                        width: '20px', height: '20px',
+                        borderRadius: '50%',
+                        border: `2px solid ${todo.completed ? '#4ade80' : '#6c63ff'}`,
+                        background: todo.completed ? '#4ade80' : 'transparent',
+                        cursor: 'pointer', flexShrink: 0,
+                        display: 'flex', alignItems: 'center',
+                        justifyContent: 'center', fontSize: '12px'
+                      }}
+                    >
+                      {todo.completed && '✓'}
+                    </div>
 
-                {/* Texte ou édition */}
-                <div style={{ flex: 1 }}>
-                  {editingId === todo.id ? (
-                    <input
-                      value={editText}
-                      onChange={e => setEditText(e.target.value)}
-                      onKeyDown={e => e.key === 'Enter' && saveEdit(todo.id)}
-                      autoFocus
-                      style={{ padding: '4px 8px' }}
-                    />
-                  ) : (
-                    <span style={{
-                      fontSize: '15px',
-                      textDecoration: todo.completed ? 'line-through' : 'none',
-                      color: todo.completed ? '#94a3b8' : '#e2e8f0'
-                    }}>
-                      {todo.tache}
-                    </span>
-                  )}
-                  {todo.deadline && (
-                    <p style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>
-                      📅 {new Date(todo.deadline).toLocaleDateString('fr-FR')}
-                    </p>
-                  )}
+                    <div>
+                      <span style={{
+                        fontSize: '15px',
+                        textDecoration: todo.completed ? 'line-through' : 'none',
+                        color: todo.completed ? '#94a3b8' : '#e2e8f0'
+                      }}>
+                        {todo.tache}
+                      </span>
+                      {todo.deadline && (
+                        <p style={{
+                          fontSize: '12px',
+                          color: isOverdue(todo.deadline) ? '#f87171' : '#94a3b8',
+                          marginTop: '4px'
+                        }}>
+                          📅 {new Date(todo.deadline).toLocaleDateString('fr-FR')}
+                          {isOverdue(todo.deadline) && ' · En retard'}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Bouton 3 points */}
+                  <div style={{ position: 'relative' }}>
+                    <button
+                      onClick={() => setOpenMenu(openMenu === todo.id ? null : todo.id)}
+                      style={{
+                        background: 'transparent', color: '#94a3b8',
+                        padding: '4px 10px', fontSize: '20px',
+                        letterSpacing: '1px'
+                      }}
+                    >
+                      ⋮
+                    </button>
+
+                    {/* Menu contextuel */}
+                    {openMenu === todo.id && (
+                      <div ref={menuRef} style={{
+                        position: 'absolute', right: 0, top: '32px',
+                        background: '#1e2130',
+                        border: '1px solid #2d3148',
+                        borderRadius: '10px',
+                        overflow: 'hidden',
+                        zIndex: 100,
+                        minWidth: '160px',
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.4)'
+                      }}>
+                        <button
+                          onClick={() => {
+                            setEditingId(todo.id)
+                            setEditText(todo.tache)
+                            setEditDeadline(todo.deadline ? todo.deadline.split('T')[0] : '')
+                            setOpenMenu(null)
+                          }}
+                          style={{
+                            width: '100%', textAlign: 'left',
+                            background: 'transparent', color: '#e2e8f0',
+                            padding: '12px 16px', borderRadius: '0',
+                            fontWeight: '400'
+                          }}
+                        >
+                          ✏️ Modifier
+                        </button>
+                        <button
+                          onClick={() => deleteTodo(todo.id)}
+                          style={{
+                            width: '100%', textAlign: 'left',
+                            background: 'transparent', color: '#f87171',
+                            padding: '12px 16px', borderRadius: '0',
+                            fontWeight: '400',
+                            borderTop: '1px solid #2d3148'
+                          }}
+                        >
+                          🗑️ Supprimer
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-
-              {/* Actions */}
-              <div style={{ display: 'flex', gap: '8px', marginLeft: '12px' }}>
-                {editingId === todo.id ? (
-                  <button
-                    onClick={() => saveEdit(todo.id)}
-                    style={{ background: '#1a2f1a', color: '#4ade80', padding: '8px 14px', fontSize: '13px' }}
-                  >
-                    ✓
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => startEdit(todo)}
-                    style={{ background: '#1e2130', color: '#94a3b8', padding: '8px 14px', fontSize: '13px' }}
-                  >
-                    ✏️
-                  </button>
-                )}
-                <button
-                  onClick={() => deleteTodo(todo.id)}
-                  style={{ background: '#2d1f1f', color: '#f87171', padding: '8px 14px', fontSize: '13px' }}
-                >
-                  🗑️
-                </button>
-              </div>
+              )}
             </div>
           ))}
         </div>
