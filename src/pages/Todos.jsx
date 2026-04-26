@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { MoreVertical, Pencil, Trash2, Check } from 'lucide-react'
 import api from '../api'
 
 function Todos() {
@@ -31,7 +32,6 @@ function Todos() {
     fetchTodos()
   }, [])
 
-  // Fermer le menu si on clique ailleurs
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -147,7 +147,7 @@ function Todos() {
             </p>
           )}
           {todos.map(todo => (
-            <div key={todo.id} style={{
+            <div key={todo.id} className="todo-item" style={{
               background: '#13151f',
               border: `1px solid ${todo.completed ? '#2d4a2d' : isOverdue(todo.deadline) ? '#4a2d2d' : '#2d3148'}`,
               borderRadius: '12px',
@@ -156,7 +156,6 @@ function Todos() {
               transition: 'all 0.2s',
               position: 'relative'
             }}>
-              {/* Mode édition */}
               {editingId === todo.id ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   <input
@@ -187,7 +186,6 @@ function Todos() {
               ) : (
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
-                    {/* Checkbox */}
                     <div
                       onClick={() => toggleComplete(todo)}
                       style={{
@@ -197,10 +195,10 @@ function Todos() {
                         background: todo.completed ? '#4ade80' : 'transparent',
                         cursor: 'pointer', flexShrink: 0,
                         display: 'flex', alignItems: 'center',
-                        justifyContent: 'center', fontSize: '12px'
+                        justifyContent: 'center'
                       }}
                     >
-                      {todo.completed && '✓'}
+                      {todo.completed && <Check size={12} color="#0f1117" strokeWidth={3} />}
                     </div>
 
                     <div>
@@ -224,20 +222,14 @@ function Todos() {
                     </div>
                   </div>
 
-                  {/* Bouton 3 points */}
                   <div style={{ position: 'relative' }}>
                     <button
                       onClick={() => setOpenMenu(openMenu === todo.id ? null : todo.id)}
-                      style={{
-                        background: 'transparent', color: '#94a3b8',
-                        padding: '4px 10px', fontSize: '20px',
-                        letterSpacing: '1px'
-                      }}
+                      style={{ background: 'transparent', color: '#94a3b8', padding: '4px 10px' }}
                     >
-                      ⋮
+                      <MoreVertical size={18} />
                     </button>
 
-                    {/* Menu contextuel */}
                     {openMenu === todo.id && (
                       <div ref={menuRef} style={{
                         position: 'absolute', right: 0, top: '32px',
@@ -260,10 +252,11 @@ function Todos() {
                             width: '100%', textAlign: 'left',
                             background: 'transparent', color: '#e2e8f0',
                             padding: '12px 16px', borderRadius: '0',
-                            fontWeight: '400'
+                            fontWeight: '400', display: 'flex',
+                            alignItems: 'center', gap: '10px'
                           }}
                         >
-                          ✏️ Modifier
+                          <Pencil size={15} /> Modifier
                         </button>
                         <button
                           onClick={() => deleteTodo(todo.id)}
@@ -271,11 +264,11 @@ function Todos() {
                             width: '100%', textAlign: 'left',
                             background: 'transparent', color: '#f87171',
                             padding: '12px 16px', borderRadius: '0',
-                            fontWeight: '400',
-                            borderTop: '1px solid #2d3148'
+                            fontWeight: '400', borderTop: '1px solid #2d3148',
+                            display: 'flex', alignItems: 'center', gap: '10px'
                           }}
                         >
-                          🗑️ Supprimer
+                          <Trash2 size={15} /> Supprimer
                         </button>
                       </div>
                     )}
