@@ -213,6 +213,17 @@ function Todos() {
                     placeholder="Date limite"
                     style={{ paddingLeft: "36px" }}
                   />
+                  <Calendar
+                    size={16}
+                    style={{
+                      position: "absolute",
+                      left: "12px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      color: "#94a3b8",
+                      pointerEvents: "none",
+                    }}
+                  />
                   <div style={{ display: "flex", gap: "8px" }}>
                     <button
                       onClick={() => saveEdit(todo.id)}
