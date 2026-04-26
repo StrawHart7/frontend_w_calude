@@ -8,6 +8,7 @@ function Todos() {
   const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState(null)
   const [openMenu, setOpenMenu] = useState(null)
+  const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 })
   const [editingId, setEditingId] = useState(null)
   const [editText, setEditText] = useState('')
   const [editDeadline, setEditDeadline] = useState('')
@@ -41,6 +42,15 @@ function Todos() {
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  const handleOpenMenu = (e, id) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    setMenuPosition({
+      top: rect.bottom + window.scrollY + 8,
+      right: window.innerWidth - rect.right
+    })
+    setOpenMenu(openMenu === id ? null : id)
+  }
 
   const addTodo = async () => {
     if (!newTache.trim()) return
@@ -224,59 +234,63 @@ function Todos() {
 
                   <div style={{ position: 'relative' }}>
                     <button
-                      onClick={() => setOpenMenu(openMenu === todo.id ? null : todo.id)}
+                      onClick={(e) => handleOpenMenu(e, todo.id)}
                       style={{ background: 'transparent', color: '#94a3b8', padding: '4px 10px' }}
                     >
                       <MoreVertical size={18} />
                     </button>
-
-                    {openMenu === todo.id && (
-                      <div ref={menuRef} style={{
-                        position: 'absolute', right: 0, top: '32px',
-                        background: '#1e2130',
-                        border: '1px solid #2d3148',
-                        borderRadius: '10px',
-                        overflow: 'hidden',
-                        zIndex: 100,
-                        minWidth: '160px',
-                        boxShadow: '0 8px 24px rgba(0,0,0,0.4)'
-                      }}>
-                        <button
-                          onClick={() => {
-                            setEditingId(todo.id)
-                            setEditText(todo.tache)
-                            setEditDeadline(todo.deadline ? todo.deadline.split('T')[0] : '')
-                            setOpenMenu(null)
-                          }}
-                          style={{
-                            width: '100%', textAlign: 'left',
-                            background: 'transparent', color: '#e2e8f0',
-                            padding: '12px 16px', borderRadius: '0',
-                            fontWeight: '400', display: 'flex',
-                            alignItems: 'center', gap: '10px'
-                          }}
-                        >
-                          <Pencil size={15} /> Modifier
-                        </button>
-                        <button
-                          onClick={() => deleteTodo(todo.id)}
-                          style={{
-                            width: '100%', textAlign: 'left',
-                            background: 'transparent', color: '#f87171',
-                            padding: '12px 16px', borderRadius: '0',
-                            fontWeight: '400', borderTop: '1px solid #2d3148',
-                            display: 'flex', alignItems: 'center', gap: '10px'
-                          }}
-                        >
-                          <Trash2 size={15} /> Supprimer
-                        </button>
-                      </div>
-                    )}
                   </div>
                 </div>
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Menu contextuel global */}
+      {openMenu && (
+        <div ref={menuRef} style={{
+          position: 'fixed',
+          top: `${menuPosition.top}px`,
+          right: `${menuPosition.right}px`,
+          background: '#1e2130',
+          border: '1px solid #2d3148',
+          borderRadius: '10px',
+          overflow: 'hidden',
+          zIndex: 999,
+          minWidth: '160px',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.4)'
+        }}>
+          <button
+            onClick={() => {
+              const todo = todos.find(t => t.id === openMenu)
+              setEditingId(todo.id)
+              setEditText(todo.tache)
+              setEditDeadline(todo.deadline ? todo.deadline.split('T')[0] : '')
+              setOpenMenu(null)
+            }}
+            style={{
+              width: '100%', textAlign: 'left',
+              background: 'transparent', color: '#e2e8f0',
+              padding: '12px 16px', borderRadius: '0',
+              fontWeight: '400', display: 'flex',
+              alignItems: 'center', gap: '10px'
+            }}
+          >
+            <Pencil size={15} /> Modifier
+          </button>
+          <button
+            onClick={() => deleteTodo(openMenu)}
+            style={{
+              width: '100%', textAlign: 'left',
+              background: 'transparent', color: '#f87171',
+              padding: '12px 16px', borderRadius: '0',
+              fontWeight: '400', borderTop: '1px solid #2d3148',
+              display: 'flex', alignItems: 'center', gap: '10px'
+            }}
+          >
+            <Trash2 size={15} /> Supprimer
+          </button>
         </div>
       )}
     </div>
