@@ -4,6 +4,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Todos from './pages/Todos'
 import Profil from './pages/Profil'
+import PrivateRoute from './PrivateRoute'
 
 function App() {
   return (
@@ -13,8 +14,16 @@ function App() {
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/todos" element={<Todos />} />
-        <Route path="/profil" element={<Profil />} />
+        <Route path="/todos" element={
+          <PrivateRoute>
+            <Todos />
+          </PrivateRoute>
+        } />
+        <Route path="/profil" element={
+          <PrivateRoute>
+            <Profil />
+          </PrivateRoute>
+        } />
       </Routes>
     </BrowserRouter>
   )
