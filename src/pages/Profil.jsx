@@ -40,20 +40,6 @@ function Profil() {
     window.location.href = import.meta.env.VITE_APP_URL;
   };
 
-  const handleDeleteAccount = async () => {
-    const confirm = window.confirm(
-      "Es-tu sûr de vouloir supprimer ton compte ? Cette action est irréversible.",
-    );
-    if (!confirm) return;
-    try {
-      await api.delete("/auth/delete-account");
-      localStorage.removeItem("token");
-      window.location.href = import.meta.env.VITE_APP_URL;
-    } catch (err) {
-      setError("Erreur lors de la suppression du compte");
-    }
-  };
-
   return (
     <div style={{ maxWidth: "520px", margin: "48px auto", padding: "0 24px" }}>
       <h1 style={{ fontSize: "28px", fontWeight: "700", marginBottom: "8px" }}>
@@ -213,19 +199,6 @@ function Profil() {
         style={{ background: "#2d1f1f", color: "#f87171", width: "100%" }}
       >
         Se déconnecter
-      </button>
-
-      <button
-        onClick={handleDeleteAccount}
-        style={{
-          background: "transparent",
-          color: "#f87171",
-          width: "100%",
-          border: "1px solid #4a2d2d",
-          marginTop: "8px",
-        }}
-      >
-        Supprimer mon compte
       </button>
     </div>
   );
