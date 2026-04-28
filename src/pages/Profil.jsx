@@ -148,7 +148,7 @@ function Profil() {
 
       {/* Version */}
       <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '13px', padding: '24px' }}>
-        Version 1.0.0
+        Version 1.0.13
       </p>
     </div>
   )
