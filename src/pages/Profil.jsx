@@ -123,7 +123,7 @@ function Profil() {
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <Crown size={22} color="#fff" />
           <div>
-            <p style={{ fontWeight: "700", fontSize: "15px" }}>Go Premium</p>
+            <p style={{ fontWeight: "900", fontSize: "18px" }}>Go Premium</p>
           </div>
         </div>
         <ChevronRight size={20} color="#fff" />
