@@ -124,9 +124,6 @@ function Profil() {
           <Crown size={22} color="#fff" />
           <div>
             <p style={{ fontWeight: "700", fontSize: "15px" }}>Go Premium</p>
-            <p style={{ fontSize: "12px", opacity: 0.85 }}>
-              Synchro, rappels, thèmes
-            </p>
           </div>
         </div>
         <ChevronRight size={20} color="#fff" />
@@ -271,7 +268,7 @@ function Profil() {
           padding: "24px",
         }}
       >
-        Version 1.0.13
+        Version 1.0.14
       </p>
     </div>
   );
