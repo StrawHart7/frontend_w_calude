@@ -1,108 +1,157 @@
-import { useState } from "react";
-import api from "../api";
+import { useState } from 'react'
+import { ChevronRight, User, Lock, Globe, Star, MessageSquare, LogOut } from 'lucide-react'
 
 function Profil() {
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState('')
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    window.location.href = import.meta.env.VITE_APP_URL;
-  };
+    localStorage.removeItem('token')
+    window.location.href = import.meta.env.VITE_APP_URL
+  }
+
+  const email = localStorage.getItem('userEmail') || 'ton@email.com'
+
+  const SettingItem = ({ icon, iconBg, label, value, onClick, danger }) => (
+    <div
+      onClick={onClick}
+      style={{
+        display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '14px 16px',
+        cursor: onClick ? 'pointer' : 'default',
+        borderBottom: '1px solid #1e2130',
+        transition: 'background 0.15s'
+      }}
+      onMouseEnter={e => e.currentTarget.style.background = '#1a1c2a'}
+      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+        <div style={{
+          width: '36px', height: '36px',
+          borderRadius: '10px',
+          background: iconBg,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0
+        }}>
+          {icon}
+        </div>
+        <span style={{ fontSize: '15px', color: danger ? '#f87171' : '#e2e8f0' }}>
+          {label}
+        </span>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        {value && <span style={{ fontSize: '13px', color: '#94a3b8' }}>{value}</span>}
+        {onClick && !danger && <ChevronRight size={16} color="#94a3b8" />}
+      </div>
+    </div>
+  )
 
   return (
-    <div style={{ maxWidth: "520px", margin: "48px auto", padding: "0 24px" }}>
-      <h1 style={{ fontSize: "28px", fontWeight: "700", marginBottom: "8px" }}>
-        Mon profil
-      </h1>
-      <p style={{ color: "#94a3b8", marginBottom: "32px" }}>
-        Gère tes informations personnelles
-      </p>
+    <div style={{ maxWidth: '520px', margin: '0 auto', padding: '0' }}>
 
-      {error && (
-        <p
-          style={{
-            background: "#2d1f1f",
-            color: "#f87171",
-            padding: "12px",
-            borderRadius: "8px",
-            marginBottom: "16px",
-            fontSize: "14px",
-          }}
-        >
-          {error}
-        </p>
-      )}
-
-      {success && (
-        <p
-          style={{
-            background: "#1a2f1a",
-            color: "#4ade80",
-            padding: "12px",
-            borderRadius: "8px",
-            marginBottom: "16px",
-            fontSize: "14px",
-          }}
-        >
-          {success}
-        </p>
-      )}
-
-
-      {/* Infos */}
-      <div
-        style={{
-          background: "#13151f",
-          border: "1px solid #2d3148",
-          borderRadius: "16px",
-          padding: "24px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "16px",
-          marginBottom: "24px",
-        }}
-      >
-        <div>
-          <label
-            style={{
-              color: "#94a3b8",
-              fontSize: "13px",
-              marginBottom: "8px",
-              display: "block",
-            }}
-          >
-            Email
-          </label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+      {/* Header profil */}
+      <div style={{
+        background: '#13151f',
+        padding: '32px 24px 24px',
+        display: 'flex', alignItems: 'center', gap: '16px',
+        borderBottom: '1px solid #2d3148'
+      }}>
+        <div style={{
+          width: '56px', height: '56px',
+          borderRadius: '50%',
+          background: '#6c63ff',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: '22px', fontWeight: '700', color: '#fff', flexShrink: 0
+        }}>
+          {email.charAt(0).toUpperCase()}
         </div>
         <div>
-          <label
-            style={{
-              color: "#94a3b8",
-              fontSize: "13px",
-              marginBottom: "8px",
-              display: "block",
-            }}
-          >
-            Nouveau mot de passe
-          </label>
-          <input type="password" placeholder="••••••••" />
+          <p style={{ fontWeight: '600', fontSize: '16px' }}>{email}</p>
+          <p style={{ color: '#4ade80', fontSize: '13px', marginTop: '2px' }}>● Connecté</p>
         </div>
       </div>
 
-      <button
-        onClick={handleLogout}
-        style={{ background: "#2d1f1f", color: "#f87171", width: "100%" }}
-      >
-        Se déconnecter
-      </button>
+      {error && (
+        <p style={{
+          background: '#2d1f1f', color: '#f87171',
+          padding: '12px 24px', fontSize: '14px'
+        }}>{error}</p>
+      )}
+
+      {/* Section COMPTE */}
+      <div style={{ padding: '24px 24px 8px' }}>
+        <p style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8', letterSpacing: '1px' }}>
+          COMPTE
+        </p>
+      </div>
+      <div style={{ background: '#13151f', borderRadius: '12px', margin: '0 16px', overflow: 'hidden' }}>
+        <SettingItem
+          icon={<User size={18} color="#fff" />}
+          iconBg="#6c63ff"
+          label="Modifier l'email"
+          onClick={() => {}}
+        />
+        <SettingItem
+          icon={<Lock size={18} color="#fff" />}
+          iconBg="#f59e0b"
+          label="Modifier le mot de passe"
+          onClick={() => {}}
+        />
+      </div>
+
+      {/* Section APPLICATION */}
+      <div style={{ padding: '24px 24px 8px' }}>
+        <p style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8', letterSpacing: '1px' }}>
+          APPLICATION
+        </p>
+      </div>
+      <div style={{ background: '#13151f', borderRadius: '12px', margin: '0 16px', overflow: 'hidden' }}>
+        <SettingItem
+          icon={<Globe size={18} color="#fff" />}
+          iconBg="#10b981"
+          label="Langue"
+          value="Français"
+        />
+      </div>
+
+      {/* Section AUTRE */}
+      <div style={{ padding: '24px 24px 8px' }}>
+        <p style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8', letterSpacing: '1px' }}>
+          AUTRE
+        </p>
+      </div>
+      <div style={{ background: '#13151f', borderRadius: '12px', margin: '0 16px', overflow: 'hidden' }}>
+        <SettingItem
+          icon={<Star size={18} color="#fff" />}
+          iconBg="#f59e0b"
+          label="Noter l'app"
+          onClick={() => {}}
+        />
+        <SettingItem
+          icon={<MessageSquare size={18} color="#fff" />}
+          iconBg="#3b82f6"
+          label="Feedback"
+          onClick={() => {}}
+        />
+      </div>
+
+      {/* Déconnexion */}
+      <div style={{ margin: '24px 16px 8px', background: '#13151f', borderRadius: '12px', overflow: 'hidden' }}>
+        <SettingItem
+          icon={<LogOut size={18} color="#f87171" />}
+          iconBg="#2d1f1f"
+          label="Se déconnecter"
+          onClick={handleLogout}
+          danger
+        />
+      </div>
+
+      {/* Version */}
+      <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '13px', padding: '24px' }}>
+        Version 1.0.0
+      </p>
     </div>
-  );
+  )
 }
 
-export default Profil;
+export default Profil

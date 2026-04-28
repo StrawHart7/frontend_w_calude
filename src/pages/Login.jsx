@@ -18,6 +18,7 @@ function Login() {
       setLoading(true)
       const res = await api.post('/auth/login', {email, password})
       localStorage.setItem('token', res.data.token)
+      localStorage.setItem('userEmail', email)
       navigate('/todos')
     } catch (error) {
       setError( error.response?.data?.message || 'Errur de connexion')
