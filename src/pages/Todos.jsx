@@ -1,12 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { MoreVertical, Pencil, Trash2, Check } from 'lucide-react'
-import api from '../api'
+import { useTodos } from '../TodosContext' // ✅ nouveau
 
 function Todos() {
-  const [todos, setTodos] = useState([])
+  const { todos, loading, toast, addTodo, toggleComplete, saveEdit, deleteTodo } = useTodos() // ✅
   const [newTache, setNewTache] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [toast, setToast] = useState(null)
   const [openMenu, setOpenMenu] = useState(null)
   const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 })
   const [editingId, setEditingId] = useState(null)
@@ -18,20 +16,6 @@ function Todos() {
     setToast({ message, type })
     setTimeout(() => setToast(null), 3000)
   }
-
-  useEffect(() => {
-    const fetchTodos = async () => {
-      try {
-        const res = await api.get('/todos')
-        setTodos(res.data)
-      } catch (err) {
-        showToast('Erreur lors du chargement', 'error')
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchTodos()
-  }, [])
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -50,53 +34,6 @@ function Todos() {
       right: window.innerWidth - rect.right
     })
     setOpenMenu(openMenu === id ? null : id)
-  }
-
-  const addTodo = async () => {
-    if (!newTache.trim()) return
-    try {
-      const res = await api.post('/todos', { tache: newTache })
-      setTodos([...todos, res.data])
-      setNewTache('')
-      showToast('Tâche ajoutée !')
-    } catch (err) {
-      showToast(err.response?.data?.message || 'Erreur', 'error')
-    }
-  }
-
-  const toggleComplete = async (todo) => {
-    try {
-      const res = await api.put(`/todos/${todo.id}`, { completed: !todo.completed })
-      setTodos(todos.map(t => t.id === todo.id ? res.data : t))
-    } catch (err) {
-      showToast('Erreur', 'error')
-    }
-  }
-
-  const saveEdit = async (id) => {
-    try {
-      const res = await api.put(`/todos/${id}`, {
-        tache: editText,
-        deadline: editDeadline || null
-      })
-      setTodos(todos.map(t => t.id === id ? res.data : t))
-      setEditingId(null)
-      setOpenMenu(null)
-      showToast('Tâche modifiée !')
-    } catch (err) {
-      showToast('Erreur', 'error')
-    }
-  }
-
-  const deleteTodo = async (id) => {
-    try {
-      await api.delete(`/todos/${id}`)
-      setTodos(todos.filter(t => t.id !== id))
-      setOpenMenu(null)
-      showToast('Tâche supprimée !')
-    } catch (err) {
-      showToast('Erreur', 'error')
-    }
   }
 
   const isOverdue = (deadline) => {
