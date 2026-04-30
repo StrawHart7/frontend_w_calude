@@ -17,7 +17,8 @@ function Login() {
     try {
       setLoading(true)
       const res = await api.post('/auth/login', {email, password})
-      localStorage.setItem('token', res.data.token)
+      localStorage.setItem('accessToken', res.data.accessToken)
+      localStorage.setItem('refreshToken', res.data.refreshToken)
       localStorage.setItem('userEmail', email)
       navigate('/todos')
     } catch (error) {

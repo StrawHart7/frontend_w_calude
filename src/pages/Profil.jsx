@@ -15,10 +15,19 @@ function Profil() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    window.location.href = import.meta.env.VITE_APP_URL;
-  };
+  const handleLogout = async () => {
+  try {
+    const refreshToken = localStorage.getItem('refreshToken')
+    await api.post('/auth/logout', { refreshToken }) // supprime le token en BDD
+  } catch (e) {
+    // même si ça échoue, on déconnecte quand même
+  } finally {
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('refreshToken')
+    localStorage.removeItem('userEmail')
+    window.location.href = import.meta.env.VITE_APP_URL
+  }
+}
 
   const email = localStorage.getItem("userEmail") || "ton@email.com";
 
@@ -268,7 +277,7 @@ function Profil() {
           padding: "24px",
         }}
       >
-        Version 1.0.14
+        Version 1.0.15
       </p>
     </div>
   );
