@@ -12,11 +12,6 @@ function Todos() {
   const [editDeadline, setEditDeadline] = useState('')
   const menuRef = useRef(null)
 
-  const showToast = (message, type = 'success') => {
-    setToast({ message, type })
-    setTimeout(() => setToast(null), 3000)
-  }
-
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -73,10 +68,10 @@ function Todos() {
           placeholder="Nouvelle tâche..."
           value={newTache}
           onChange={e => setNewTache(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && addTodo()}
+          onKeyDown={e => { if (e.key === 'Enter') { addTodo(newTache); setNewTache('') } }}
         />
         <button
-          onClick={addTodo}
+          onClick={() => { addTodo(newTache); setNewTache('') }}
           style={{ background: '#6c63ff', color: '#fff', whiteSpace: 'nowrap', padding: '12px 20px' }}
         >
           + Ajouter
@@ -117,7 +112,7 @@ function Todos() {
                   />
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button
-                      onClick={() => saveEdit(todo.id)}
+                      onClick={() => saveEdit(todo.id, editText, editDeadline)}
                       style={{ background: '#1a2f1a', color: '#4ade80', flex: 1 }}
                     >
                       Sauvegarder
