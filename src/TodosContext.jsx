@@ -15,18 +15,21 @@ export function TodosProvider({ children }) {
 
   // Chargement unique au démarrage
   useEffect(() => {
-    const fetchTodos = async () => {
-      try {
-        const res = await api.get('/todos')
-        setTodos(res.data)
-      } catch (err) {
-        showToast('Erreur lors du chargement', 'error')
-      } finally {
-        setLoading(false)
-      }
+  const token = localStorage.getItem('accessToken')
+  if (!token) return // ✅ ne rien faire si pas connecté
+
+  const fetchTodos = async () => {
+    try {
+      const res = await api.get('/todos')
+      setTodos(res.data)
+    } catch (err) {
+      showToast('Erreur lors du chargement', 'error')
+    } finally {
+      setLoading(false)
     }
-    fetchTodos()
-  }, [])
+  }
+  fetchTodos()
+}, [])
 
   const addTodo = async (tache) => {
     try {
