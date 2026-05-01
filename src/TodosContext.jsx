@@ -14,23 +14,24 @@ export function TodosProvider({ children }) {
   }
 
   // Chargement unique au démarrage
-  useEffect(() => {
+  const fetchTodos = async () => {
   const token = localStorage.getItem('accessToken')
   if (!token) {
-    setLoading(false) // ✅ ajoute cette ligne
+    setLoading(false)
     return
   }
-
-  const fetchTodos = async () => {
-    try {
-      const res = await api.get('/todos')
-      setTodos(res.data)
-    } catch (err) {
-      showToast('Erreur lors du chargement', 'error')
-    } finally {
-      setLoading(false)
-    }
+  try {
+    setLoading(true)
+    const res = await api.get('/todos')
+    setTodos(res.data)
+  } catch (err) {
+    showToast('Erreur lors du chargement', 'error')
+  } finally {
+    setLoading(false)
   }
+}
+
+useEffect(() => {
   fetchTodos()
 }, [])
 
@@ -74,7 +75,7 @@ export function TodosProvider({ children }) {
   }
 
   return (
-    <TodosContext.Provider value={{ todos, loading, toast, addTodo, toggleComplete, saveEdit, deleteTodo }}>
+    <TodosContext.Provider value={{ todos, loading, toast, addTodo, toggleComplete, saveEdit, deleteTodo, fetchTodos }}>
       {children}
     </TodosContext.Provider>
   )

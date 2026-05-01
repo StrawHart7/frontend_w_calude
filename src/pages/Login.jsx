@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import api from '../api'
 
 function Login() {
+  const { fetchTodos } = useTodos()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -20,6 +21,7 @@ function Login() {
       localStorage.setItem('accessToken', res.data.accessToken)
       localStorage.setItem('refreshToken', res.data.refreshToken)
       localStorage.setItem('userEmail', email)
+      await fetchTodos()
       navigate('/todos')
     } catch (error) {
       setError( error.response?.data?.message || 'Errur de connexion')
