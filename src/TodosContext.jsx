@@ -16,7 +16,10 @@ export function TodosProvider({ children }) {
   // Chargement unique au démarrage
   useEffect(() => {
   const token = localStorage.getItem('accessToken')
-  if (!token) return // ✅ ne rien faire si pas connecté
+  if (!token) {
+    setLoading(false) // ✅ ajoute cette ligne
+    return
+  }
 
   const fetchTodos = async () => {
     try {
