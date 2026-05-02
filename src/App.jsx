@@ -6,13 +6,14 @@ import Todos from "./pages/Todos"
 import Profil from "./pages/Profil"
 import PrivateRoute from "./PrivateRoute"
 import Premium from "./pages/Premium"
-import { TodosProvider } from "./TodosContext" // ✅ nouveau
+import PremiumSuccess from "./pages/PremiumSuccess"
+import { TodosProvider } from "./TodosContext"
 
 function App() {
   return (
     <BrowserRouter>
       <Navbar />
-      <TodosProvider> {/* ✅ enveloppe les routes privées */}
+      <TodosProvider>
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
@@ -20,6 +21,7 @@ function App() {
           <Route path="/todos" element={<PrivateRoute><Todos /></PrivateRoute>} />
           <Route path="/profil" element={<PrivateRoute><Profil /></PrivateRoute>} />
           <Route path="/premium" element={<PrivateRoute><Premium /></PrivateRoute>} />
+          <Route path="/premium/success" element={<PrivateRoute><PremiumSuccess /></PrivateRoute>} />
         </Routes>
       </TodosProvider>
     </BrowserRouter>
