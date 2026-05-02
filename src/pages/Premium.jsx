@@ -1,8 +1,23 @@
 import { Check, Crown, Bell, Smartphone, Palette, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import api from '../api'
 
 function Premium() {
   const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
+
+  const handlePayment = async () => {
+    try {
+      setLoading(true)
+      const res = await api.post('/payment/initiate')
+      window.location.href = res.data.authorization_url
+    } catch (err) {
+      alert('Erreur lors de l\'initialisation du paiement')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const features = [
     {
@@ -176,20 +191,23 @@ function Premium() {
       {/* CTA */}
       <div style={{ padding: '32px 24px 0' }}>
         <button
-          onClick={() => {}}
+          onClick={handlePayment}
+          disabled={loading}
           style={{
             width: '100%',
-            background: 'linear-gradient(135deg, #6c63ff, #a78bfa)',
+            background: loading ? '#4a4a6a' : 'linear-gradient(135deg, #6c63ff, #a78bfa)',
             color: '#fff',
             padding: '16px',
             fontSize: '16px',
             fontWeight: '700',
             borderRadius: '14px',
             boxShadow: '0 8px 24px rgba(108, 99, 255, 0.4)',
-            letterSpacing: '0.5px'
+            letterSpacing: '0.5px',
+            opacity: loading ? 0.7 : 1,
+            cursor: loading ? 'not-allowed' : 'pointer'
           }}
         >
-          👑 Obtenir Premium — $10/an
+          {loading ? 'Chargement...' : '👑 Obtenir Premium — $10/an'}
         </button>
         <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '12px', marginTop: '12px' }}>
           Paiement sécurisé · Annulation à tout moment
