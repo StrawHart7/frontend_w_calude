@@ -9,6 +9,8 @@ function PremiumSuccess() {
   const navigate = useNavigate()
 
   useEffect(() => {
+    console.log('URL complète:', window.location.href)
+  console.log('Tous les params:', Object.fromEntries(searchParams))
     const verify = async () => {
       const reference = searchParams.get('reference')
 
