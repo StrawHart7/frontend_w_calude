@@ -60,3 +60,7 @@ button:active {
 .todo-item {
   animation: slideIn 0.25s ease forwards;
 }
+
+main, .page-content {
+  padding-bottom: 80px;
+}

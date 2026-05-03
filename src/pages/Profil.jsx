@@ -119,7 +119,7 @@ function Profil() {
   }
 
   return (
-    <div style={{ maxWidth: "520px", margin: "0 auto", padding: "0" }}>
+    <div style={{ maxWidth: "520px", margin: "0 auto", paddingBottom: "80px" }}>
 
       {/* Feedback Bottom Sheet */}
       {showFeedback && (

@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
-import Navbar from "./components/Navbar"
+import BottomBar from "./components/BottomBar"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Todos from "./pages/Todos"
@@ -13,7 +13,6 @@ import { TodosProvider } from "./TodosContext"
 function App() {
   return (
     <BrowserRouter>
-      <Navbar />
       <TodosProvider>
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
@@ -25,6 +24,7 @@ function App() {
           <Route path="/premium/success" element={<PrivateRoute><PremiumSuccess /></PrivateRoute>} />
           <Route path="/coming-soon" element={<PrivateRoute><ComingSoon /></PrivateRoute>} />
         </Routes>
+        <BottomBar />
       </TodosProvider>
     </BrowserRouter>
   )

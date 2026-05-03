@@ -67,7 +67,7 @@ function Todos() {
   )
 
   return (
-    <div style={{ maxWidth: '640px', margin: '48px auto', padding: '0 24px' }}>
+    <div style={{ maxWidth: '640px', margin: '48px auto', padding: '0 24px 80px' }}>
 
       {/* Toast */}
       {toast && (
