@@ -292,32 +292,13 @@ function Profil() {
       </div>
 
       {/* Banner Premium / Déjà Premium */}
-      {isPremium ? (
-        <div style={{
-          margin: "16px", background: "linear-gradient(135deg, #1a2f1a, #1e3a1e)",
-          border: "1px solid #4ade80",
-          borderRadius: "14px", padding: "16px 20px", display: "flex",
-          alignItems: "center", gap: "12px",
-        }}>
-          <div style={{
-            width: "36px", height: "36px", borderRadius: "50%",
-            background: "#4ade80",
-            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0
-          }}>
-            <Check size={18} color="#000" />
-          </div>
-          <div>
-            <p style={{ fontWeight: "700", fontSize: "15px", color: "#4ade80" }}>Tu es Premium 👑</p>
-            <p style={{ fontSize: "12px", color: "#86efac", marginTop: "2px" }}>Toutes les fonctionnalités sont débloquées</p>
-          </div>
-        </div>
-      ) : (
+      {!isPremium && (
         <div onClick={() => navigate("/premium")} style={{
-          margin: "16px", background: "linear-gradient(135deg, #6c63ff, #a78bfa)",
-          borderRadius: "14px", padding: "16px 20px", display: "flex",
-          alignItems: "center", justifyContent: "space-between", cursor: "pointer",
-          boxShadow: "0 4px 20px rgba(108, 99, 255, 0.3)",
-        }}>
+            margin: "16px", background: "linear-gradient(135deg, #6c63ff, #a78bfa)",
+            borderRadius: "14px", padding: "16px 20px", display: "flex",
+            alignItems: "center", justifyContent: "space-between", cursor: "pointer",
+            boxShadow: "0 4px 20px rgba(108, 99, 255, 0.3)",
+          }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <Crown size={22} color="#fff" />
             <p style={{ fontWeight: "800", fontSize: "18px" }}>Go Premium</p>
