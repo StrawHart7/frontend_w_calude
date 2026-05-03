@@ -13,10 +13,10 @@ function Profil() {
   const [success, setSuccess] = useState("");
   const [modal, setModal] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [showFeedback, setShowFeedback] = useState(false)
 
   const [newEmail, setNewEmail] = useState("")
   const [emailPassword, setEmailPassword] = useState("")
-
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
 
@@ -120,6 +120,60 @@ function Profil() {
 
   return (
     <div style={{ maxWidth: "520px", margin: "0 auto", padding: "0" }}>
+
+      {/* Feedback Bottom Sheet */}
+      {showFeedback && (
+        <div
+          onClick={() => setShowFeedback(false)}
+          style={{
+            position: "fixed", inset: 0,
+            background: "rgba(0,0,0,0.6)",
+            zIndex: 1000
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              position: "fixed", bottom: 0, left: 0, right: 0,
+              background: "#13151f",
+              borderRadius: "20px 20px 0 0",
+              border: "1px solid #2d3148",
+              overflow: "hidden",
+              maxWidth: "520px",
+              margin: "0 auto"
+            }}
+          >
+            {/* Header */}
+            <div style={{
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+              padding: "20px 20px 0"
+            }}>
+              <div>
+                <h2 style={{ fontSize: "17px", fontWeight: "700" }}>Donner un feedback</h2>
+                <p style={{ color: "#94a3b8", fontSize: "13px", marginTop: "2px" }}>
+                  Ton avis nous aide à améliorer l'app
+                </p>
+              </div>
+              <div
+                onClick={() => setShowFeedback(false)}
+                style={{ cursor: "pointer", color: "#94a3b8", padding: "4px" }}
+              >
+                <X size={20} />
+              </div>
+            </div>
+
+            {/* Tally iframe */}
+            <iframe
+              src={`https://tally.so/embed/0QoJv6?alignLeft=1&hideTitle=1&transparentBackground=1&email=${encodeURIComponent(email)}`}
+              width="100%"
+              height="320"
+              frameBorder="0"
+              style={{ display: "block", marginTop: "8px" }}
+              title="Feedback"
+            />
+          </div>
+        </div>
+      )}
 
       {/* Modal overlay */}
       {modal && (
@@ -306,8 +360,8 @@ function Profil() {
         <p style={{ fontSize: "12px", fontWeight: "600", color: "#94a3b8", letterSpacing: "1px" }}>AUTRE</p>
       </div>
       <div style={{ background: "#13151f", borderRadius: "12px", margin: "0 16px", overflow: "hidden" }}>
-        <SettingItem icon={<Star size={18} color="#fff" />} iconBg="#f59e0b" label="Noter l'app" onClick={() => navigate('/coming-soon')} />        
-        <SettingItem icon={<MessageSquare size={18} color="#fff" />} iconBg="#3b82f6" label="Feedback" onClick={() => {}} />
+        <SettingItem icon={<Star size={18} color="#fff" />} iconBg="#f59e0b" label="Noter l'app" onClick={() => navigate('/coming-soon')} />
+        <SettingItem icon={<MessageSquare size={18} color="#fff" />} iconBg="#3b82f6" label="Feedback" onClick={() => setShowFeedback(true)} />
       </div>
 
       {/* Déconnexion */}
