@@ -24,9 +24,6 @@ function App() {
           <Route path="/premium/success" element={<PrivateRoute><PremiumSuccess /></PrivateRoute>} />
         </Routes>
       </TodosProvider>
-      <PremiumGate feature="Rappels & Notifications">
-        <MonComposantPremium />
-      </PremiumGate>
     </BrowserRouter>
   )
 }
