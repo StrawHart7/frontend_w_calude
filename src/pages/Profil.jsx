@@ -306,7 +306,7 @@ function Profil() {
         <p style={{ fontSize: "12px", fontWeight: "600", color: "#94a3b8", letterSpacing: "1px" }}>AUTRE</p>
       </div>
       <div style={{ background: "#13151f", borderRadius: "12px", margin: "0 16px", overflow: "hidden" }}>
-        <SettingItem icon={<Star size={18} color="#fff" />} iconBg="#f59e0b" label="Noter l'app" onClick={() => {}} />
+        <SettingItem icon={<Star size={18} color="#fff" />} iconBg="#f59e0b" label="Noter l'app" onClick={() => navigate('/coming-soon')} />        
         <SettingItem icon={<MessageSquare size={18} color="#fff" />} iconBg="#3b82f6" label="Feedback" onClick={() => {}} />
       </div>
 

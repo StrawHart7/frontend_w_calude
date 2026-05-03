@@ -7,6 +7,7 @@ import Profil from "./pages/Profil"
 import PrivateRoute from "./PrivateRoute"
 import Premium from "./pages/Premium"
 import PremiumSuccess from "./pages/PremiumSuccess"
+import ComingSoon from './pages/ComingSoon'
 import { TodosProvider } from "./TodosContext"
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
           <Route path="/profil" element={<PrivateRoute><Profil /></PrivateRoute>} />
           <Route path="/premium" element={<PrivateRoute><Premium /></PrivateRoute>} />
           <Route path="/premium/success" element={<PrivateRoute><PremiumSuccess /></PrivateRoute>} />
+          <Route path="/coming-soon" element={<PrivateRoute><ComingSoon /></PrivateRoute>} />
         </Routes>
       </TodosProvider>
     </BrowserRouter>
