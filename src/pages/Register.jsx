@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import api from '../api'
+import { useTodos } from '../TodosContext'
 
 function Register() {
+  const { fetchTodos, fetchMe } = useTodos()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
@@ -24,14 +26,19 @@ function Register() {
       setError('')
       await api.post('/auth/register', { email, password })
       const loginRes = await api.post('/auth/login', { email, password })
-      localStorage.setItem('token', loginRes.data.token)
-      navigate('/todos') // ✅
+      localStorage.setItem('accessToken', loginRes.data.accessToken)
+      localStorage.setItem('refreshToken', loginRes.data.refreshToken)
+      localStorage.setItem('userEmail', email)
+      await fetchMe()
+      await fetchTodos()
+      navigate('/todos')
     } catch (err) {
       setError(err.response?.data?.message || 'Erreur lors de l\'inscription')
     } finally {
       setLoading(false)
     }
   }
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -73,26 +80,29 @@ function Register() {
             placeholder="Email"
             value={email}
             onChange={e => setEmail(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleSubmit()}
           />
           <input
             type="password"
             placeholder="Mot de passe"
             value={password}
             onChange={e => setPassword(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleSubmit()}
           />
           <input
             type="password"
             placeholder="Confirmer le mot de passe"
             value={confirm}
             onChange={e => setConfirm(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleSubmit()}
           />
           <button
-  onClick={handleSubmit}
-  disabled={loading}
-  style={{ background: '#6c63ff', color: '#fff', marginTop: '8px', opacity: loading ? 0.7 : 1 }}
->
-  {loading ? 'Inscription...' : "S'inscrire"}
-</button>
+            onClick={handleSubmit}
+            disabled={loading}
+            style={{ background: '#6c63ff', color: '#fff', marginTop: '8px', opacity: loading ? 0.7 : 1 }}
+          >
+            {loading ? 'Inscription...' : "S'inscrire"}
+          </button>
         </div>
 
         <p style={{ color: '#94a3b8', marginTop: '24px', textAlign: 'center', fontSize: '14px' }}>

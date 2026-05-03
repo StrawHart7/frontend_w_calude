@@ -2,7 +2,7 @@ import { Link, useLocation } from 'react-router-dom'
 
 function Navbar() {
   const location = useLocation()
-  const hideOn = ['/login', '/register']
+  const hideOn = ['/login', '/register', '/premium/success', '/coming-soon']
 
   if (hideOn.includes(location.pathname)) return null
 
