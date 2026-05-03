@@ -66,3 +66,7 @@ button:active {
 main, .page-content {
   padding-bottom: 80px;
 }
+
+html, body {
+  overflow-x: hidden;
+}
