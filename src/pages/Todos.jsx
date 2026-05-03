@@ -39,7 +39,6 @@ function Todos() {
 
   const remaining = todos.filter(t => !t.completed).length
 
-  // Preview des rappels (affiché flouté pour les non-premium)
   const RappelsPreview = () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '4px 0' }}>
       {[
@@ -96,10 +95,20 @@ function Todos() {
           placeholder="Nouvelle tâche..."
           value={newTache}
           onChange={e => setNewTache(e.target.value)}
-          onKeyDown={e => { if (e.key === 'Enter') { addTodo(newTache); setNewTache('') } }}
+          onKeyDown={e => {
+            if (e.key === 'Enter' && newTache.trim()) {
+              addTodo(newTache.trim())
+              setNewTache('')
+            }
+          }}
         />
         <button
-          onClick={() => { addTodo(newTache); setNewTache('') }}
+          onClick={() => {
+            if (newTache.trim()) {
+              addTodo(newTache.trim())
+              setNewTache('')
+            }
+          }}
           style={{ background: '#6c63ff', color: '#fff', whiteSpace: 'nowrap', padding: '12px 20px' }}
         >
           + Ajouter
