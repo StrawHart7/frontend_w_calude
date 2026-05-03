@@ -376,7 +376,7 @@ function Profil() {
           borderBottom: "1px solid #2d3148",
         }}
       >
-        <div style={{ position: "relative" }}>
+        <div style={{ position: "relative", flexShrink: 0 }}>
           <div
             style={{
               width: "56px",
@@ -423,6 +423,7 @@ function Profil() {
               alignItems: "center",
               gap: "8px",
               minWidth: 0,
+              flex: 1
             }}
           >
             <p
