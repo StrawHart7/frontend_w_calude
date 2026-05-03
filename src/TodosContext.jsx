@@ -7,33 +7,50 @@ export function TodosProvider({ children }) {
   const [todos, setTodos] = useState([])
   const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState(null)
+  const [isPremium, setIsPremium] = useState(false)
+  const [user, setUser] = useState(null)
 
   const showToast = (message, type = 'success') => {
     setToast({ message, type })
     setTimeout(() => setToast(null), 3000)
   }
 
-  // Chargement unique au démarrage
-  const fetchTodos = async () => {
-  const token = localStorage.getItem('accessToken')
-  if (!token) {
-    setLoading(false)
-    return
+  const fetchMe = async () => {
+    try {
+      const res = await api.get('/auth/me')
+      setUser(res.data)
+      setIsPremium(res.data.is_premium)
+    } catch (err) {
+      // silencieux
+    }
   }
-  try {
-    setLoading(true)
-    const res = await api.get('/todos')
-    setTodos(res.data)
-  } catch (err) {
-    showToast('Erreur lors du chargement', 'error')
-  } finally {
-    setLoading(false)
-  }
-}
 
-useEffect(() => {
-  fetchTodos()
-}, [])
+  const fetchTodos = async () => {
+    const token = localStorage.getItem('accessToken')
+    if (!token) {
+      setLoading(false)
+      return
+    }
+    try {
+      setLoading(true)
+      const res = await api.get('/todos')
+      setTodos(res.data)
+    } catch (err) {
+      showToast('Erreur lors du chargement', 'error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken')
+    if (token) {
+      fetchMe()
+      fetchTodos()
+    } else {
+      setLoading(false)
+    }
+  }, [])
 
   const addTodo = async (tache) => {
     try {
@@ -75,7 +92,7 @@ useEffect(() => {
   }
 
   return (
-    <TodosContext.Provider value={{ todos, loading, toast, addTodo, toggleComplete, saveEdit, deleteTodo, fetchTodos }}>
+    <TodosContext.Provider value={{ todos, loading, toast, isPremium, user, fetchMe, addTodo, toggleComplete, saveEdit, deleteTodo, fetchTodos }}>
       {children}
     </TodosContext.Provider>
   )

@@ -1,22 +1,22 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
+import { useTodos } from "../TodosContext";
 import {
   ChevronRight, User, Lock, Globe, Star,
-  MessageSquare, LogOut, Crown, X
+  MessageSquare, LogOut, Crown, X, Check
 } from "lucide-react";
 
 function Profil() {
+  const { isPremium } = useTodos()
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [modal, setModal] = useState(null) // 'email' | 'password' | null
+  const [modal, setModal] = useState(null)
   const [loading, setLoading] = useState(false)
 
-  // Champs email
   const [newEmail, setNewEmail] = useState("")
   const [emailPassword, setEmailPassword] = useState("")
 
-  // Champs password
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
 
@@ -132,7 +132,6 @@ function Profil() {
             background: "#13151f", borderRadius: "16px", padding: "24px",
             width: "100%", maxWidth: "400px", border: "1px solid #2d3148"
           }}>
-            {/* Header modal */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
               <h2 style={{ fontSize: "18px", fontWeight: "700" }}>
                 {modal === 'email' ? "Modifier l'email" : "Modifier le mot de passe"}
@@ -149,7 +148,6 @@ function Profil() {
               }}>{error}</p>
             )}
 
-            {/* Champs email */}
             {modal === 'email' && (
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                 <input
@@ -171,7 +169,6 @@ function Profil() {
               </div>
             )}
 
-            {/* Champs password */}
             {modal === 'password' && (
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                 <input
@@ -202,32 +199,78 @@ function Profil() {
         display: "flex", alignItems: "center", gap: "16px",
         borderBottom: "1px solid #2d3148",
       }}>
-        <div style={{
-          width: "56px", height: "56px", borderRadius: "50%", background: "#6c63ff",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: "22px", fontWeight: "700", color: "#fff", flexShrink: 0,
-        }}>
-          {email.charAt(0).toUpperCase()}
+        <div style={{ position: "relative" }}>
+          <div style={{
+            width: "56px", height: "56px", borderRadius: "50%",
+            background: isPremium ? "linear-gradient(135deg, #6c63ff, #a78bfa)" : "#6c63ff",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: "22px", fontWeight: "700", color: "#fff", flexShrink: 0,
+          }}>
+            {email.charAt(0).toUpperCase()}
+          </div>
+          {isPremium && (
+            <div style={{
+              position: "absolute", bottom: -4, right: -4,
+              background: "#f59e0b", borderRadius: "50%",
+              width: "20px", height: "20px",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              border: "2px solid #0f1117"
+            }}>
+              <Crown size={10} color="#fff" />
+            </div>
+          )}
         </div>
         <div>
-          <p style={{ fontWeight: "600", fontSize: "16px" }}>{email}</p>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <p style={{ fontWeight: "600", fontSize: "16px" }}>{email}</p>
+            {isPremium && (
+              <span style={{
+                background: "linear-gradient(135deg, #f59e0b, #fbbf24)",
+                color: "#000", fontSize: "10px", fontWeight: "800",
+                padding: "2px 8px", borderRadius: "20px", letterSpacing: "0.5px"
+              }}>
+                PREMIUM
+              </span>
+            )}
+          </div>
           <p style={{ color: "#4ade80", fontSize: "13px", marginTop: "2px" }}>● Connecté</p>
         </div>
       </div>
 
-      {/* Go Premium */}
-      <div onClick={() => navigate("/premium")} style={{
-        margin: "16px", background: "linear-gradient(135deg, #6c63ff, #a78bfa)",
-        borderRadius: "14px", padding: "16px 20px", display: "flex",
-        alignItems: "center", justifyContent: "space-between", cursor: "pointer",
-        boxShadow: "0 4px 20px rgba(108, 99, 255, 0.3)",
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <Crown size={22} color="#fff" />
-          <p style={{ fontWeight: "800", fontSize: "18px" }}>Go Premium</p>
+      {/* Banner Premium / Déjà Premium */}
+      {isPremium ? (
+        <div style={{
+          margin: "16px", background: "linear-gradient(135deg, #1a2f1a, #1e3a1e)",
+          border: "1px solid #4ade80",
+          borderRadius: "14px", padding: "16px 20px", display: "flex",
+          alignItems: "center", gap: "12px",
+        }}>
+          <div style={{
+            width: "36px", height: "36px", borderRadius: "50%",
+            background: "#4ade80",
+            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0
+          }}>
+            <Check size={18} color="#000" />
+          </div>
+          <div>
+            <p style={{ fontWeight: "700", fontSize: "15px", color: "#4ade80" }}>Tu es Premium 👑</p>
+            <p style={{ fontSize: "12px", color: "#86efac", marginTop: "2px" }}>Toutes les fonctionnalités sont débloquées</p>
+          </div>
         </div>
-        <ChevronRight size={20} color="#fff" />
-      </div>
+      ) : (
+        <div onClick={() => navigate("/premium")} style={{
+          margin: "16px", background: "linear-gradient(135deg, #6c63ff, #a78bfa)",
+          borderRadius: "14px", padding: "16px 20px", display: "flex",
+          alignItems: "center", justifyContent: "space-between", cursor: "pointer",
+          boxShadow: "0 4px 20px rgba(108, 99, 255, 0.3)",
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <Crown size={22} color="#fff" />
+            <p style={{ fontWeight: "800", fontSize: "18px" }}>Go Premium</p>
+          </div>
+          <ChevronRight size={20} color="#fff" />
+        </div>
+      )}
 
       {success && (
         <p style={{
