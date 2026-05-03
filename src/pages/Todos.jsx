@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
-import { MoreVertical, Pencil, Trash2, Check } from 'lucide-react'
-import { useTodos } from '../TodosContext' // ✅ nouveau
+import { MoreVertical, Pencil, Trash2, Check, Bell } from 'lucide-react'
+import { useTodos } from '../TodosContext'
+import PremiumGate from '../components/PremiumGate'
 
 function Todos() {
-  const { todos, loading, toast, addTodo, toggleComplete, saveEdit, deleteTodo } = useTodos() // ✅
+  const { todos, loading, toast, addTodo, toggleComplete, saveEdit, deleteTodo } = useTodos()
   const [newTache, setNewTache] = useState('')
   const [openMenu, setOpenMenu] = useState(null)
   const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 })
@@ -37,6 +38,33 @@ function Todos() {
   }
 
   const remaining = todos.filter(t => !t.completed).length
+
+  // Preview des rappels (affiché flouté pour les non-premium)
+  const RappelsPreview = () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '4px 0' }}>
+      {[
+        { label: 'Réunion équipe', time: 'Dans 2 heures', color: '#6c63ff' },
+        { label: 'Envoyer rapport', time: 'Demain 9h00', color: '#f59e0b' },
+        { label: 'Appel client', time: 'Vendredi 14h00', color: '#10b981' },
+      ].map((r, i) => (
+        <div key={i} style={{
+          background: '#13151f', border: '1px solid #2d3148',
+          borderRadius: '10px', padding: '12px 16px',
+          display: 'flex', alignItems: 'center', gap: '12px'
+        }}>
+          <div style={{
+            width: '8px', height: '8px', borderRadius: '50%',
+            background: r.color, flexShrink: 0
+          }} />
+          <div style={{ flex: 1 }}>
+            <p style={{ fontSize: '14px', fontWeight: '500' }}>{r.label}</p>
+            <p style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>{r.time}</p>
+          </div>
+          <Bell size={14} color="#94a3b8" />
+        </div>
+      ))}
+    </div>
+  )
 
   return (
     <div style={{ maxWidth: '640px', margin: '48px auto', padding: '0 24px' }}>
@@ -178,6 +206,16 @@ function Todos() {
           ))}
         </div>
       )}
+
+      {/* Section Rappels — Premium Gate */}
+      <div style={{ marginTop: '40px' }}>
+        <p style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8', letterSpacing: '1px', marginBottom: '16px' }}>
+          RAPPELS
+        </p>
+        <PremiumGate feature="Rappels & Notifications">
+          <RappelsPreview />
+        </PremiumGate>
+      </div>
 
       {/* Menu contextuel global */}
       {openMenu && (
