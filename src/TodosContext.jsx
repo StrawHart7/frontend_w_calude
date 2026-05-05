@@ -30,20 +30,26 @@ export function TodosProvider({ children }) {
 
   const subscribeToPush = async () => {
   try {
+    console.log('subscribeToPush called');
     const reg = await navigator.serviceWorker.ready;
+    console.log('SW ready');
 
     const existing = await reg.pushManager.getSubscription();
-    if (existing) return; // déjà abonné
+    console.log('existing:', existing);
+    if (existing) return;
 
     const permission = await Notification.requestPermission();
+    console.log('permission:', permission);
     if (permission !== 'granted') return;
 
     const sub = await reg.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: 'BBnvUNOreE6ub6DfGZlmQQAa7GrPwAk9tR_Kbb5t6Qo4RBE2moFYI0RlMAPCSrQ-01geNLEkqSo-OFWqznMvWzA'
     });
+    console.log('sub créée:', sub);
 
-    await api.post('/push/subscribe', sub);
+    const res = await api.post('/push/subscribe', sub);
+    console.log('réponse backend:', res.data);
   } catch (err) {
     console.error('Push subscribe erreur:', err);
   }
