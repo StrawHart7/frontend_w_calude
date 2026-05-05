@@ -16,14 +16,38 @@ export function TodosProvider({ children }) {
   }
 
   const fetchMe = async () => {
-    try {
-      const res = await api.get('/auth/me')
-      setUser(res.data)
-      setIsPremium(res.data.is_premium)
-    } catch (err) {
-      // silencieux
+  try {
+    const res = await api.get('/auth/me')
+    setUser(res.data)
+    setIsPremium(res.data.is_premium)
+    if (res.data.is_premium) {
+      subscribeToPush()
     }
+  } catch (err) {
+    // silencieux
   }
+}
+
+  const subscribeToPush = async () => {
+  try {
+    const reg = await navigator.serviceWorker.ready;
+
+    const existing = await reg.pushManager.getSubscription();
+    if (existing) return; // déjà abonné
+
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') return;
+
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: 'BBnvUNOreE6ub6DfGZlmQQAa7GrPwAk9tR_Kbb5t6Qo4RBE2moFYI0RlMAPCSrQ-01geNLEkqSo-OFWqznMvWzA'
+    });
+
+    await api.post('/push/subscribe', sub);
+  } catch (err) {
+    console.error('Push subscribe erreur:', err);
+  }
+};
 
   const fetchTodos = async () => {
     const token = localStorage.getItem('accessToken')
