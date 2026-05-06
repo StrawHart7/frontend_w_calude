@@ -143,7 +143,7 @@ function Todos() {
                     autoFocus
                   />
                   <input
-                    type="date"
+                    type="datetime-local"
                     value={editDeadline}
                     onChange={e => setEditDeadline(e.target.value)}
                   />
@@ -194,7 +194,7 @@ function Todos() {
                           color: isOverdue(todo.deadline) ? '#f87171' : '#94a3b8',
                           marginTop: '4px'
                         }}>
-                          📅 {new Date(todo.deadline).toLocaleDateString('fr-FR')}
+                          || {new Date(todo.deadline).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })}
                           {isOverdue(todo.deadline) && ' · En retard'}
                         </p>
                       )}
@@ -245,7 +245,7 @@ function Todos() {
               const todo = todos.find(t => t.id === openMenu)
               setEditingId(todo.id)
               setEditText(todo.tache)
-              setEditDeadline(todo.deadline ? todo.deadline.split('T')[0] : '')
+              setEditDeadline(todo.deadline ? todo.deadline.slice(0, 16) : '')
               setOpenMenu(null)
             }}
             style={{
