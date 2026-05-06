@@ -194,7 +194,7 @@ function Todos() {
                           color: isOverdue(todo.deadline) ? '#f87171' : '#94a3b8',
                           marginTop: '4px'
                         }}>
-                          || {new Date(todo.deadline).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })}
+                          {new Date(todo.deadline).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })}
                           {isOverdue(todo.deadline) && ' · En retard'}
                         </p>
                       )}
